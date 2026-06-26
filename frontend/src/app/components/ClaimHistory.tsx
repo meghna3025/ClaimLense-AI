@@ -304,7 +304,7 @@ export function ClaimHistory({ onNavigate }: ClaimHistoryProps) {
                       </td>
                       <td className="px-4 py-3.5 text-right">
                         <span className="text-sm font-semibold text-gray-800">
-                          ${claim.estimatedCost.toLocaleString()}
+                          ₹{claim.estimatedCost.toLocaleString('en-IN')}
                         </span>
                       </td>
                       <td className="px-4 py-3.5">
@@ -400,7 +400,7 @@ export function ClaimHistory({ onNavigate }: ClaimHistoryProps) {
           <div className="flex items-center gap-2 text-xs text-gray-500">
             <span>Total portfolio value:</span>
             <span className="font-semibold text-gray-700">
-              ${totalCost.toLocaleString()}
+              ₹{totalCost.toLocaleString('en-IN')}
             </span>
           </div>
         </div>

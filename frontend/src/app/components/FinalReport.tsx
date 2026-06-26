@@ -175,12 +175,12 @@ export function FinalReport({ report, onNavigate }: FinalReportProps) {
               <div>
                 <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>Est. Repair</div>
                 <div className="font-semibold text-sm mt-0.5">
-                  ${report.estimatedRepairCost.toLocaleString()}
+                  ₹{report.estimatedRepairCost.toLocaleString('en-IN')}
                 </div>
               </div>
               <div>
                 <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>Net Payout</div>
-                <div className="font-semibold text-sm mt-0.5">${netPayout.toLocaleString()}</div>
+                <div className="font-semibold text-sm mt-0.5">₹{netPayout.toLocaleString('en-IN')}</div>
               </div>
             </div>
           </motion.div>
@@ -238,7 +238,7 @@ export function FinalReport({ report, onNavigate }: FinalReportProps) {
                     </div>
                     <div className="text-right">
                       <div className="text-sm font-semibold text-gray-800">
-                        ${part.cost.toLocaleString()}
+                        ₹{part.cost.toLocaleString('en-IN')}
                       </div>
                       <div className="text-xs text-gray-400">est. repair</div>
                     </div>
@@ -255,13 +255,13 @@ export function FinalReport({ report, onNavigate }: FinalReportProps) {
               <div className="flex justify-between text-sm mb-2">
                 <span className="text-gray-500">Total Parts & Labor</span>
                 <span className="font-semibold text-gray-800">
-                  ${report.estimatedRepairCost.toLocaleString()}
+                  ₹{report.estimatedRepairCost.toLocaleString('en-IN')}
                 </span>
               </div>
               <div className="flex justify-between text-sm mb-2">
                 <span className="text-gray-500">Deductible</span>
                 <span className="font-semibold text-red-600">
-                  - ${report.deductible.toLocaleString()}
+                  - ₹{report.deductible.toLocaleString('en-IN')}
                 </span>
               </div>
               <div
@@ -270,7 +270,7 @@ export function FinalReport({ report, onNavigate }: FinalReportProps) {
               >
                 <span className="font-semibold text-gray-700">Insurance Payout</span>
                 <span className="font-bold" style={{ color: '#1976D2', fontSize: 16 }}>
-                  ${netPayout.toLocaleString()}
+                  ₹{netPayout.toLocaleString('en-IN')}
                 </span>
               </div>
             </div>
@@ -497,10 +497,10 @@ export function FinalReport({ report, onNavigate }: FinalReportProps) {
             </div>
             <div className="space-y-3">
               {[
-                { label: 'Coverage Limit', value: `$${report.coverageAmount.toLocaleString()}`, color: '#16A34A' },
-                { label: 'Repair Estimate', value: `$${report.estimatedRepairCost.toLocaleString()}`, color: '#1976D2' },
-                { label: 'Deductible', value: `$${report.deductible.toLocaleString()}`, color: '#D97706' },
-                { label: 'Net Insurance Payout', value: `$${netPayout.toLocaleString()}`, color: '#7C3AED' },
+                { label: 'Coverage Limit', value: `₹${report.coverageAmount.toLocaleString('en-IN')}`, color: '#16A34A' },
+                { label: 'Repair Estimate', value: `₹${report.estimatedRepairCost.toLocaleString('en-IN')}`, color: '#1976D2' },
+                { label: 'Deductible', value: `₹${report.deductible.toLocaleString('en-IN')}`, color: '#D97706' },
+                { label: 'Net Insurance Payout', value: `₹${netPayout.toLocaleString('en-IN')}`, color: '#7C3AED' },
               ].map((item) => (
                 <div
                   key={item.label}

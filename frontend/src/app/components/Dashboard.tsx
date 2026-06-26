@@ -353,7 +353,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
                     </td>
                     <td className="px-4 py-3.5 text-right">
                       <span className="text-sm font-medium text-gray-800">
-                        ${claim.estimatedCost.toLocaleString()}
+                        ₹{claim.estimatedCost.toLocaleString('en-IN')}
                       </span>
                     </td>
                     <td className="px-4 py-3.5 text-center">
