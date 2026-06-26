@@ -209,17 +209,20 @@ function toReportData(
 export async function submitClaim(claimData: ClaimFormData): Promise<ReportData> {
   const formData = new FormData();
 
-  // Attach first image (backend accepts one image)
-  if (claimData.images.length === 0) {
-    throw new Error('At least one image is required.');
-  }
-  formData.append('image', claimData.images[0]);
   formData.append('description', claimData.accidentDescription);
   formData.append('policy_number', claimData.policyNumber);
-  formData.append(
-    'vehicle_model',
-    `${claimData.vehicleMake} ${claimData.vehicleModel}`.trim()
-  );
+  formData.append('vehicle_model', `${claimData.vehicleMake} ${claimData.vehicleModel}`.trim());
+
+  if (claimData.video) {
+    // Video path — backend extracts frames automatically
+    formData.append('video', claimData.video);
+  } else {
+    // Image path
+    if (claimData.images.length === 0) {
+      throw new Error('At least one image is required.');
+    }
+    formData.append('image', claimData.images[0]);
+  }
 
   const response = await fetch('/api/v1/claims/process', {
     method: 'POST',

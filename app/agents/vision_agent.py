@@ -25,7 +25,9 @@ logger = logging.getLogger(__name__)
 
 VISION_PROMPT = """
 You are an expert automobile damage inspector and insurance assessor with 20+ years of experience.
-Carefully analyse the provided vehicle image.
+Carefully analyse the provided vehicle image(s).
+
+MEDIA CONTEXT: {media_context}
 
 Return ONLY a valid JSON object with this exact structure — no markdown fences:
 {{
@@ -84,23 +86,34 @@ class VisionAgent(BaseAgent):
         self.logger.info("VisionAgent starting for claim %s", state.claim_id)
         try:
             image_bytes = base64.b64decode(state.image_base64)
-
-            # Use actual mime type from upload, not hardcoded jpeg
             mime_type = state.image_mime_type or "image/jpeg"
 
-            image_part = {
+            # Primary frame / image
+            primary_part = {
                 "mime_type": mime_type,
                 "data": image_bytes,
             }
 
+            # All frames: primary + any extra frames from video extraction
+            all_image_parts = [primary_part] + list(state.extra_image_parts)
+
+            is_video = state.media_source == "video"
+            frame_count = len(all_image_parts)
+
             prompt = VISION_PROMPT.format(
                 vehicle_model=state.vehicle_model,
                 accident_description=state.accident_description,
+                media_context=(
+                    f"These are {frame_count} frames extracted from an accident VIDEO CLIP. "
+                    "Analyse ALL frames together to build a complete picture of the damage."
+                    if is_video else
+                    "This is a single accident PHOTOGRAPH."
+                ),
             )
 
             raw_response = self._call_gemini_vision(
                 prompt=prompt,
-                image_parts=[image_part],
+                image_parts=all_image_parts,
             )
 
             data = self._extract_json(raw_response)

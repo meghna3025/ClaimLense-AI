@@ -8,6 +8,8 @@ import {
   Image,
   AlertCircle,
   CheckCircle,
+  Video,
+  Film,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { ViewType, ClaimFormData } from '../types';
@@ -29,6 +31,12 @@ export function NewClaimForm({ onNavigate }: NewClaimFormProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+
+  // Media upload tab: 'image' | 'video'
+  const [mediaTab, setMediaTab] = useState<'image' | 'video'>('image');
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoDragOver, setVideoDragOver] = useState(false);
 
   const handleChange = (field: string, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -63,8 +71,21 @@ export function NewClaimForm({ onNavigate }: NewClaimFormProps) {
     if (!form.policyNumber.trim()) newErrors.policyNumber = 'Policy number is required';
     if (!form.accidentDescription.trim() || form.accidentDescription.trim().length < 20)
       newErrors.accidentDescription = 'Please provide at least 20 characters';
-    if (images.length === 0) newErrors.images = 'At least one vehicle image is required';
+    if (mediaTab === 'image' && images.length === 0)
+      newErrors.images = 'At least one vehicle image is required';
+    if (mediaTab === 'video' && !videoFile)
+      newErrors.images = 'A video clip is required';
     return newErrors;
+  };
+
+  const handleVideoSelect = (file: File) => {
+    if (!file.type.startsWith('video/')) return;
+    if (file.size > 100 * 1024 * 1024) {
+      setErrors((prev) => ({ ...prev, images: 'Video must be under 100 MB' }));
+      return;
+    }
+    setVideoFile(file);
+    if (errors.images) setErrors((prev) => ({ ...prev, images: '' }));
   };
 
   const handleSubmit = () => {
@@ -81,6 +102,7 @@ export function NewClaimForm({ onNavigate }: NewClaimFormProps) {
         policyNumber: form.policyNumber,
         accidentDescription: form.accidentDescription,
         images,
+        video: mediaTab === 'video' ? videoFile ?? undefined : undefined,
       });
     }, 600);
   };
@@ -240,7 +262,7 @@ export function NewClaimForm({ onNavigate }: NewClaimFormProps) {
             </div>
           </motion.div>
 
-          {/* Image Upload Card */}
+          {/* Media Upload Card — Image or Video */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -248,102 +270,130 @@ export function NewClaimForm({ onNavigate }: NewClaimFormProps) {
             className="bg-white rounded-2xl p-6"
             style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04)' }}
           >
-            <div className="flex items-center gap-3 mb-5">
-              <div
-                className="w-9 h-9 rounded-xl flex items-center justify-center"
-                style={{ background: '#EFF6FF' }}
-              >
-                <Image style={{ width: 18, height: 18, color: '#1976D2' }} />
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: '#EFF6FF' }}>
+                {mediaTab === 'video'
+                  ? <Film style={{ width: 18, height: 18, color: '#1976D2' }} />
+                  : <Image style={{ width: 18, height: 18, color: '#1976D2' }} />}
               </div>
               <div>
-                <h3 className="text-gray-900 text-sm" style={{ fontWeight: 600 }}>
-                  Damage Images
-                </h3>
-                <p className="text-xs text-gray-400">
-                  Upload up to 8 photos · AI Vision Agent will analyze them
-                </p>
+                <h3 className="text-gray-900 text-sm" style={{ fontWeight: 600 }}>Damage Evidence</h3>
+                <p className="text-xs text-gray-400">Upload photos or a video clip — AI will analyse them</p>
               </div>
             </div>
 
-            {/* Drop Zone */}
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              onDragOver={(e) => {
-                e.preventDefault();
-                setDragOver(true);
-              }}
-              onDragLeave={() => setDragOver(false)}
-              onDrop={(e) => {
-                e.preventDefault();
-                setDragOver(false);
-                addImages(e.dataTransfer.files);
-              }}
-              className="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all"
-              style={{
-                borderColor: dragOver ? '#1976D2' : errors.images ? '#FCA5A5' : '#DBEAFE',
-                background: dragOver ? '#EFF6FF' : errors.images ? '#FFF5F5' : '#F8FBFF',
-              }}
-            >
-              <div
-                className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-3"
-                style={{ background: '#DBEAFE' }}
-              >
-                <Upload style={{ width: 20, height: 20, color: '#1976D2' }} />
-              </div>
-              <p className="text-sm font-medium text-gray-700">
-                {dragOver ? 'Drop images here' : 'Drag & drop images, or click to browse'}
-              </p>
-              <p className="text-xs text-gray-400 mt-1">PNG, JPG, WEBP up to 10MB each · Max 8 images</p>
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => e.target.files && addImages(e.target.files)}
-              />
+            {/* Tab switcher */}
+            <div className="flex gap-2 mb-5 p-1 rounded-xl" style={{ background: '#F1F5F9' }}>
+              {(['image', 'video'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => { setMediaTab(tab); setErrors((p) => ({ ...p, images: '' })); }}
+                  className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all"
+                  style={mediaTab === tab
+                    ? { background: '#fff', color: '#1976D2', boxShadow: '0 1px 4px rgba(0,0,0,0.1)' }
+                    : { color: '#64748B' }}
+                >
+                  {tab === 'image' ? <Image style={{ width: 14, height: 14 }} /> : <Video style={{ width: 14, height: 14 }} />}
+                  {tab === 'image' ? 'Photos' : 'Video Clip'}
+                </button>
+              ))}
             </div>
-            {errors.images && (
-              <p className="text-xs text-red-500 mt-2 flex items-center gap-1">
-                <AlertCircle style={{ width: 11, height: 11 }} />
-                {errors.images}
-              </p>
+
+            {mediaTab === 'image' ? (
+              <>
+                {/* Drop Zone — Images */}
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={(e) => { e.preventDefault(); setDragOver(false); addImages(e.dataTransfer.files); }}
+                  className="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all"
+                  style={{
+                    borderColor: dragOver ? '#1976D2' : errors.images ? '#FCA5A5' : '#DBEAFE',
+                    background: dragOver ? '#EFF6FF' : errors.images ? '#FFF5F5' : '#F8FBFF',
+                  }}
+                >
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-3" style={{ background: '#DBEAFE' }}>
+                    <Upload style={{ width: 20, height: 20, color: '#1976D2' }} />
+                  </div>
+                  <p className="text-sm font-medium text-gray-700">
+                    {dragOver ? 'Drop images here' : 'Drag & drop images, or click to browse'}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">PNG, JPG, WEBP up to 20MB · Max 8 images</p>
+                  <input ref={fileInputRef} type="file" multiple accept="image/*" className="hidden"
+                    onChange={(e) => e.target.files && addImages(e.target.files)} />
+                </div>
+
+                {imagePreviews.length > 0 && (
+                  <div className="grid grid-cols-4 gap-3 mt-4">
+                    <AnimatePresence>
+                      {imagePreviews.map((src, i) => (
+                        <motion.div key={i} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }} className="relative group rounded-xl overflow-hidden aspect-square bg-gray-100">
+                          <img src={src} alt="" className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors" />
+                          <button onClick={(e) => { e.stopPropagation(); removeImage(i); }}
+                            className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                            style={{ background: '#EF4444' }}>
+                            <X style={{ width: 12, height: 12, color: '#fff' }} />
+                          </button>
+                          <div className="absolute bottom-1.5 left-1.5 text-xs px-1.5 py-0.5 rounded-md"
+                            style={{ background: 'rgba(0,0,0,0.5)', color: '#fff' }}>{i + 1}</div>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                {/* Drop Zone — Video */}
+                <div
+                  onClick={() => videoInputRef.current?.click()}
+                  onDragOver={(e) => { e.preventDefault(); setVideoDragOver(true); }}
+                  onDragLeave={() => setVideoDragOver(false)}
+                  onDrop={(e) => {
+                    e.preventDefault(); setVideoDragOver(false);
+                    const f = e.dataTransfer.files[0];
+                    if (f) handleVideoSelect(f);
+                  }}
+                  className="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all"
+                  style={{
+                    borderColor: videoDragOver ? '#1976D2' : errors.images ? '#FCA5A5' : '#DBEAFE',
+                    background: videoDragOver ? '#EFF6FF' : errors.images ? '#FFF5F5' : '#F8FBFF',
+                  }}
+                >
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-3" style={{ background: '#DBEAFE' }}>
+                    <Video style={{ width: 20, height: 20, color: '#1976D2' }} />
+                  </div>
+                  {videoFile ? (
+                    <div>
+                      <p className="text-sm font-semibold text-gray-700">{videoFile.name}</p>
+                      <p className="text-xs text-gray-400 mt-1">{(videoFile.size / 1024 / 1024).toFixed(1)} MB</p>
+                      <button onClick={(e) => { e.stopPropagation(); setVideoFile(null); }}
+                        className="mt-2 text-xs text-red-500 underline">Remove</button>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-sm font-medium text-gray-700">
+                        {videoDragOver ? 'Drop video here' : 'Drag & drop a video, or click to browse'}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-1">MP4, MOV, AVI, WebM · Max 100 MB</p>
+                      <p className="text-xs mt-2 px-3 py-1.5 rounded-lg inline-block" style={{ background: '#EFF6FF', color: '#1976D2' }}>
+                        AI will extract the best frames automatically
+                      </p>
+                    </>
+                  )}
+                  <input ref={videoInputRef} type="file" accept="video/*" className="hidden"
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) handleVideoSelect(f); }} />
+                </div>
+              </>
             )}
 
-            {/* Image Previews */}
-            {imagePreviews.length > 0 && (
-              <div className="grid grid-cols-4 gap-3 mt-4">
-                <AnimatePresence>
-                  {imagePreviews.map((src, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      className="relative group rounded-xl overflow-hidden aspect-square bg-gray-100"
-                    >
-                      <img src={src} alt="" className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors" />
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeImage(i);
-                        }}
-                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                        style={{ background: '#EF4444' }}
-                      >
-                        <X style={{ width: 12, height: 12, color: '#fff' }} />
-                      </button>
-                      <div
-                        className="absolute bottom-1.5 left-1.5 text-xs px-1.5 py-0.5 rounded-md"
-                        style={{ background: 'rgba(0,0,0,0.5)', color: '#fff' }}
-                      >
-                        {i + 1}
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
+            {errors.images && (
+              <p className="text-xs text-red-500 mt-2 flex items-center gap-1">
+                <AlertCircle style={{ width: 11, height: 11 }} />{errors.images}
+              </p>
             )}
           </motion.div>
         </div>
@@ -366,7 +416,12 @@ export function NewClaimForm({ onNavigate }: NewClaimFormProps) {
                 { label: 'Vehicle Make', value: form.vehicleMake || '—' },
                 { label: 'Vehicle Model', value: form.vehicleModel || '—' },
                 { label: 'Policy Number', value: form.policyNumber || '—' },
-                { label: 'Images Attached', value: `${images.length} / 8` },
+                {
+                  label: mediaTab === 'video' ? 'Video' : 'Images Attached',
+                  value: mediaTab === 'video'
+                    ? (videoFile ? videoFile.name.slice(0, 20) + (videoFile.name.length > 20 ? '…' : '') : '—')
+                    : `${images.length} / 8`,
+                },
               ].map((item) => (
                 <div key={item.label} className="flex justify-between items-start">
                   <span className="text-xs text-gray-400">{item.label}</span>
@@ -406,7 +461,7 @@ export function NewClaimForm({ onNavigate }: NewClaimFormProps) {
             </h3>
             <div className="space-y-2.5">
               {[
-                'Vision Agent analyzes images',
+                mediaTab === 'video' ? 'Video frames extracted by AI' : 'Vision Agent analyzes images',
                 'Damage Assessment evaluates parts',
                 'Policy Analysis checks coverage',
                 'Repair Estimation calculates costs',

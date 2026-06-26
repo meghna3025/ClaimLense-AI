@@ -207,7 +207,11 @@ class GraphState(BaseModel):
     vehicle_model: str = ""
     accident_description: str = ""
     image_base64: str = ""
-    image_mime_type: str = "image/jpeg"  # actual mime type forwarded from upload
+    image_mime_type: str = "image/jpeg"       # actual mime type forwarded from upload
+    extra_image_parts: list[dict] = Field(    # additional frames from video extraction
+        default_factory=list
+    )
+    media_source: str = "image"               # "image" | "video"
 
     # Agent outputs
     vision_output: VisionAgentOutput | None = None

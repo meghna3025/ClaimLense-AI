@@ -10,6 +10,7 @@ export interface ClaimFormData {
   policyNumber: string;
   accidentDescription: string;
   images: File[];
+  video?: File;
 }
 
 export interface DamagedPart {
