@@ -1,0 +1,110 @@
+{
+  "version": "1.0",
+  "rules": [
+    {
+      "id": "FR001",
+      "name": "Description-Damage Mismatch",
+      "description": "Accident description does not match visible damage location/type",
+      "weight": 0.8,
+      "category": "Inconsistency"
+    },
+    {
+      "id": "FR002",
+      "name": "Severity Inflation",
+      "description": "Claimed severity far exceeds what is visible in photos",
+      "weight": 0.9,
+      "category": "Fraud"
+    },
+    {
+      "id": "FR003",
+      "name": "Pre-existing Damage",
+      "description": "Damage shows signs of age, rust, or previous repair inconsistent with recent accident",
+      "weight": 0.85,
+      "category": "Pre-existing"
+    },
+    {
+      "id": "FR004",
+      "name": "Estimate Inflation",
+      "description": "Repair estimate significantly exceeds market rate for the damage described",
+      "weight": 0.75,
+      "category": "Financial"
+    },
+    {
+      "id": "FR005",
+      "name": "Policy Timing Suspicious",
+      "description": "Major claim filed within 30 days of policy inception",
+      "weight": 0.7,
+      "category": "Timing"
+    },
+    {
+      "id": "FR006",
+      "name": "Multiple Claims Pattern",
+      "description": "More than 2 claims in 12 months for same vehicle",
+      "weight": 0.65,
+      "category": "Pattern"
+    },
+    {
+      "id": "FR007",
+      "name": "Vague Accident Description",
+      "description": "Accident description lacks specific details (location, time, circumstances)",
+      "weight": 0.5,
+      "category": "Documentation"
+    },
+    {
+      "id": "FR008",
+      "name": "Unrelated Parts Claimed",
+      "description": "Parts claimed do not correspond to the type of accident described",
+      "weight": 0.8,
+      "category": "Inconsistency"
+    },
+    {
+      "id": "FR009",
+      "name": "No FIR Filed",
+      "description": "High-value claim without police FIR when legally required",
+      "weight": 0.6,
+      "category": "Documentation"
+    },
+    {
+      "id": "FR010",
+      "name": "Witness Inconsistency",
+      "description": "Witness accounts contradict the claimant's description",
+      "weight": 0.85,
+      "category": "Inconsistency"
+    },
+    {
+      "id": "FR011",
+      "name": "Total Loss on Old Vehicle",
+      "description": "Total loss claim on vehicle near end of depreciation life",
+      "weight": 0.55,
+      "category": "Financial"
+    },
+    {
+      "id": "FR012",
+      "name": "Airbag Without Impact Damage",
+      "description": "Airbag deployment claimed without corresponding major impact damage",
+      "weight": 0.9,
+      "category": "Fraud"
+    },
+    {
+      "id": "FR013",
+      "name": "Image Metadata Manipulation",
+      "description": "Photo EXIF data suggests images not taken at claimed date/location",
+      "weight": 0.95,
+      "category": "Fraud"
+    },
+    {
+      "id": "FR014",
+      "name": "Duplicate Claim",
+      "description": "Similar claim filed with another insurer for same incident",
+      "weight": 1.0,
+      "category": "Fraud"
+    },
+    {
+      "id": "FR015",
+      "name": "Repair Bill Discrepancy",
+      "description": "Repair bills show different amounts or parts than surveyor assessment",
+      "weight": 0.85,
+      "category": "Financial"
+    }
+  ]
+}

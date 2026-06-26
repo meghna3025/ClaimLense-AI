@@ -1,0 +1,42 @@
+[
+  {
+    "id": "BASIC",
+    "name": "Basic Motor Insurance",
+    "prefix": "POL-BASIC",
+    "monthly_premium": 850,
+    "deductible": 10000,
+    "max_payout": 75000,
+    "coverage_pct": 60,
+    "file": "policy_basic.md"
+  },
+  {
+    "id": "STANDARD",
+    "name": "Standard Motor Insurance",
+    "prefix": "POL-STANDARD",
+    "monthly_premium": 1500,
+    "deductible": 5000,
+    "max_payout": 150000,
+    "coverage_pct": 80,
+    "file": "policy_standard.md"
+  },
+  {
+    "id": "PREMIUM",
+    "name": "Premium Motor Insurance",
+    "prefix": "POL-PREMIUM",
+    "monthly_premium": 2800,
+    "deductible": 2500,
+    "max_payout": 300000,
+    "coverage_pct": 90,
+    "file": "policy_premium.md"
+  },
+  {
+    "id": "COMPREHENSIVE",
+    "name": "Comprehensive Motor Insurance",
+    "prefix": "POL-COMP",
+    "monthly_premium": 4500,
+    "deductible": 0,
+    "max_payout": 1000000,
+    "coverage_pct": 100,
+    "file": "policy_comprehensive.md"
+  }
+]

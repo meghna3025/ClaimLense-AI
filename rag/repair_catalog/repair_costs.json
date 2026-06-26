@@ -1,0 +1,295 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "currency": "INR",
+    "last_updated": "2024-01-01",
+    "note": "Prices include OEM parts. Labour charged separately."
+  },
+  "vehicles": {
+    "Toyota Corolla": {
+      "Front Bumper": {
+        "parts_cost": 18000,
+        "labour_cost": 4000,
+        "action": "REPLACE"
+      },
+      "Rear Bumper": {
+        "parts_cost": 17000,
+        "labour_cost": 3500,
+        "action": "REPLACE"
+      },
+      "Front Bumper Repair": {
+        "parts_cost": 3000,
+        "labour_cost": 2500,
+        "action": "REPAIR"
+      },
+      "Headlight (Left)": {
+        "parts_cost": 9500,
+        "labour_cost": 1500,
+        "action": "REPLACE"
+      },
+      "Headlight (Right)": {
+        "parts_cost": 9500,
+        "labour_cost": 1500,
+        "action": "REPLACE"
+      },
+      "Taillight (Left)": {
+        "parts_cost": 7500,
+        "labour_cost": 1200,
+        "action": "REPLACE"
+      },
+      "Taillight (Right)": {
+        "parts_cost": 7500,
+        "labour_cost": 1200,
+        "action": "REPLACE"
+      },
+      "Bonnet": {
+        "parts_cost": 22000,
+        "labour_cost": 6000,
+        "action": "REPLACE"
+      },
+      "Bonnet Repair": {
+        "parts_cost": 4000,
+        "labour_cost": 3000,
+        "action": "REPAIR"
+      },
+      "Front Door (Left)": {
+        "parts_cost": 32000,
+        "labour_cost": 8000,
+        "action": "REPLACE"
+      },
+      "Front Door (Right)": {
+        "parts_cost": 32000,
+        "labour_cost": 8000,
+        "action": "REPLACE"
+      },
+      "Rear Door (Left)": {
+        "parts_cost": 28000,
+        "labour_cost": 7000,
+        "action": "REPLACE"
+      },
+      "Rear Door (Right)": {
+        "parts_cost": 28000,
+        "labour_cost": 7000,
+        "action": "REPLACE"
+      },
+      "Windshield": {
+        "parts_cost": 14000,
+        "labour_cost": 3000,
+        "action": "REPLACE"
+      },
+      "Rear Windshield": {
+        "parts_cost": 11000,
+        "labour_cost": 2500,
+        "action": "REPLACE"
+      },
+      "Side Mirror (Left)": {
+        "parts_cost": 4500,
+        "labour_cost": 800,
+        "action": "REPLACE"
+      },
+      "Side Mirror (Right)": {
+        "parts_cost": 4500,
+        "labour_cost": 800,
+        "action": "REPLACE"
+      },
+      "Fender (Left)": {
+        "parts_cost": 12000,
+        "labour_cost": 4000,
+        "action": "REPLACE"
+      },
+      "Fender (Right)": {
+        "parts_cost": 12000,
+        "labour_cost": 4000,
+        "action": "REPLACE"
+      },
+      "Radiator": {
+        "parts_cost": 18000,
+        "labour_cost": 5000,
+        "action": "REPLACE"
+      },
+      "Airbag Replacement": {
+        "parts_cost": 45000,
+        "labour_cost": 12000,
+        "action": "REPLACE"
+      },
+      "Wheel Alignment": {
+        "parts_cost": 0,
+        "labour_cost": 2500,
+        "action": "REPAIR"
+      },
+      "Dent Removal (Minor)": {
+        "parts_cost": 0,
+        "labour_cost": 3500,
+        "action": "REPAIR"
+      }
+    },
+    "Honda City": {
+      "Front Bumper": {
+        "parts_cost": 16500,
+        "labour_cost": 4000,
+        "action": "REPLACE"
+      },
+      "Rear Bumper": {
+        "parts_cost": 15500,
+        "labour_cost": 3500,
+        "action": "REPLACE"
+      },
+      "Headlight (Left)": {
+        "parts_cost": 11000,
+        "labour_cost": 1800,
+        "action": "REPLACE"
+      },
+      "Headlight (Right)": {
+        "parts_cost": 11000,
+        "labour_cost": 1800,
+        "action": "REPLACE"
+      },
+      "Bonnet": {
+        "parts_cost": 20000,
+        "labour_cost": 5500,
+        "action": "REPLACE"
+      },
+      "Windshield": {
+        "parts_cost": 13000,
+        "labour_cost": 2800,
+        "action": "REPLACE"
+      },
+      "Front Door (Left)": {
+        "parts_cost": 30000,
+        "labour_cost": 7500,
+        "action": "REPLACE"
+      },
+      "Front Door (Right)": {
+        "parts_cost": 30000,
+        "labour_cost": 7500,
+        "action": "REPLACE"
+      },
+      "Rear Door (Left)": {
+        "parts_cost": 26000,
+        "labour_cost": 6500,
+        "action": "REPLACE"
+      },
+      "Side Mirror (Left)": {
+        "parts_cost": 5000,
+        "labour_cost": 900,
+        "action": "REPLACE"
+      },
+      "Fender (Left)": {
+        "parts_cost": 11000,
+        "labour_cost": 3800,
+        "action": "REPLACE"
+      },
+      "Airbag Replacement": {
+        "parts_cost": 48000,
+        "labour_cost": 13000,
+        "action": "REPLACE"
+      }
+    },
+    "Hyundai i20": {
+      "Front Bumper": {
+        "parts_cost": 14000,
+        "labour_cost": 3500,
+        "action": "REPLACE"
+      },
+      "Rear Bumper": {
+        "parts_cost": 13000,
+        "labour_cost": 3000,
+        "action": "REPLACE"
+      },
+      "Headlight (Left)": {
+        "parts_cost": 8500,
+        "labour_cost": 1400,
+        "action": "REPLACE"
+      },
+      "Bonnet": {
+        "parts_cost": 17000,
+        "labour_cost": 5000,
+        "action": "REPLACE"
+      },
+      "Windshield": {
+        "parts_cost": 10500,
+        "labour_cost": 2500,
+        "action": "REPLACE"
+      },
+      "Front Door (Left)": {
+        "parts_cost": 25000,
+        "labour_cost": 6500,
+        "action": "REPLACE"
+      },
+      "Fender (Left)": {
+        "parts_cost": 9000,
+        "labour_cost": 3200,
+        "action": "REPLACE"
+      }
+    },
+    "Maruti Swift": {
+      "Front Bumper": {
+        "parts_cost": 11000,
+        "labour_cost": 3000,
+        "action": "REPLACE"
+      },
+      "Rear Bumper": {
+        "parts_cost": 10500,
+        "labour_cost": 2800,
+        "action": "REPLACE"
+      },
+      "Headlight (Left)": {
+        "parts_cost": 6500,
+        "labour_cost": 1200,
+        "action": "REPLACE"
+      },
+      "Bonnet": {
+        "parts_cost": 14000,
+        "labour_cost": 4500,
+        "action": "REPLACE"
+      },
+      "Windshield": {
+        "parts_cost": 8500,
+        "labour_cost": 2200,
+        "action": "REPLACE"
+      },
+      "Front Door (Left)": {
+        "parts_cost": 20000,
+        "labour_cost": 5500,
+        "action": "REPLACE"
+      },
+      "Fender (Left)": {
+        "parts_cost": 7500,
+        "labour_cost": 2800,
+        "action": "REPLACE"
+      }
+    },
+    "Tata Nexon": {
+      "Front Bumper": {
+        "parts_cost": 19000,
+        "labour_cost": 4500,
+        "action": "REPLACE"
+      },
+      "Rear Bumper": {
+        "parts_cost": 17500,
+        "labour_cost": 4000,
+        "action": "REPLACE"
+      },
+      "Headlight (Left)": {
+        "parts_cost": 13000,
+        "labour_cost": 2000,
+        "action": "REPLACE"
+      },
+      "Bonnet": {
+        "parts_cost": 24000,
+        "labour_cost": 6500,
+        "action": "REPLACE"
+      },
+      "Windshield": {
+        "parts_cost": 15000,
+        "labour_cost": 3200,
+        "action": "REPLACE"
+      },
+      "Front Door (Left)": {
+        "parts_cost": 34000,
+        "labour_cost": 8500,
+        "action": "REPLACE"
+      }
+    }
+  }
+}
