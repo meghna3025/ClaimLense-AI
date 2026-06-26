@@ -3,7 +3,10 @@ fastapi==0.111.0
 uvicorn[standard]==0.30.1
 python-multipart==0.0.9
 
-## Google Gemini  (0.8.x required by langchain-google-genai 2.x)
+## OpenAI (primary LLM provider)
+openai==1.35.0
+
+## Google Gemini (kept as fallback — quota may be exhausted)
 google-generativeai==0.8.5
 
 ## LangGraph / LangChain

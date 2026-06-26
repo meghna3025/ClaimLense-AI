@@ -29,9 +29,9 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("ClaimSense AI starting up…")
-    if not settings.gemini_api_key:
+    if not settings.openai_api_key:
         logger.warning(
-            "GEMINI_API_KEY is not set. "
+            "OPENAI_API_KEY is not set. "
             "Set it in .env or as an environment variable before processing claims."
         )
     yield

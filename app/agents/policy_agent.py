@@ -1,7 +1,7 @@
 """
 Policy Agent
 ─────────────
-Uses RAG (FAISS + Gemini embeddings) over insurance policy documents
+Uses RAG (FAISS + OpenAI embeddings) over insurance policy documents
 to determine coverage, deductibles, and supporting clauses.
 """
 
@@ -117,14 +117,14 @@ class PolicyAgent(BaseAgent):
         return self._index
 
     def _embed(self, text: str) -> list[float]:
-        """Get Gemini text embedding for a query string."""
-        import google.generativeai as genai
-        result = genai.embed_content(
-            model="models/text-embedding-004",
-            content=text,
-            task_type="retrieval_query",
+        """Get OpenAI text embedding for a query string."""
+        from openai import OpenAI
+        client = OpenAI(api_key=settings.openai_api_key)
+        response = client.embeddings.create(
+            model="text-embedding-3-small",
+            input=text,
         )
-        return result["embedding"]
+        return response.data[0].embedding
 
     def run(self, state: GraphState) -> GraphState:
         self.logger.info("PolicyAgent starting for claim %s", state.claim_id)

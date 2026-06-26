@@ -14,12 +14,17 @@ class Settings(BaseSettings):
         case_sensitive=False,
     )
 
-    # Google Gemini
+    # OpenAI
+    openai_api_key: str = ""
+    openai_model: str = "gpt-4o-mini"          # text agents (cost efficient)
+    openai_vision_model: str = "gpt-4o"         # vision agent (multimodal)
+
+    # Legacy Gemini keys (kept so existing .env files don't break)
     gemini_api_key: str = ""
     gemini_model: str = "gemini-2.0-flash"
     gemini_vision_model: str = "gemini-2.0-flash"
 
-    # FAISS index base directory (sub-dirs: policies/, repair_catalog/, etc.)
+    # FAISS index base directory
     chroma_persist_dir: str = "./rag/faiss_db"
 
     # RAG source paths
