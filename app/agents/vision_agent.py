@@ -1,8 +1,9 @@
 """
 Vision Agent
 ─────────────
-Uses Gemini Vision to analyse an accident image and detect damaged
-automobile parts, classify severity, and return structured JSON.
+Uses Gemini Vision to analyse an accident image, detect damaged automobile
+parts, classify severity, and flag any unauthorised vehicle modifications
+that may void or reduce insurance coverage.
 """
 
 import base64
@@ -16,21 +17,22 @@ from app.models.schemas import (
     DamagedPart,
     GraphState,
     SeverityLevel,
+    VehicleModification,
     VisionAgentOutput,
 )
 
 logger = logging.getLogger(__name__)
 
 VISION_PROMPT = """
-You are an expert automobile damage inspector with 20+ years of experience.
-Analyse the provided accident image carefully.
+You are an expert automobile damage inspector and insurance assessor with 20+ years of experience.
+Carefully analyse the provided vehicle image.
 
-Return ONLY a valid JSON object with this exact structure:
+Return ONLY a valid JSON object with this exact structure — no markdown fences:
 {{
   "damaged_parts": [
     {{
-      "part_name": "<name of the part>",
-      "damage_description": "<detailed visual description>",
+      "part_name": "<specific part name>",
+      "damage_description": "<detailed visual description of the damage>",
       "severity": "<MINOR|MODERATE|SEVERE|TOTAL_LOSS>",
       "confidence": <0.0 to 1.0>
     }}
@@ -38,34 +40,56 @@ Return ONLY a valid JSON object with this exact structure:
   "overall_severity": "<MINOR|MODERATE|SEVERE|TOTAL_LOSS>",
   "accident_type": "<front collision|rear-end|side impact|rollover|multi-point|unknown>",
   "image_quality": "<Clear|Blurry|Partial>",
-  "raw_observations": "<free-text description of everything you observe>"
+  "raw_observations": "<free-text description of everything visually observed>",
+  "modifications_detected": [
+    {{
+      "modification_type": "<type e.g. aftermarket exhaust, engine chip tune, body kit, lift kit, racing tyres, tinted windows beyond legal limit, nitrous system, roll cage, suspension lowering>",
+      "description": "<what is visually visible in the image>",
+      "claim_impact": "<how this modification affects the insurance claim>",
+      "rejection_reason": "<specific policy reason e.g. Unauthorised performance modification voids Section 4.2 of standard policy>"
+    }}
+  ]
 }}
 
-Context provided by the claimant:
+Context provided by claimant:
 - Vehicle model: {vehicle_model}
 - Accident description: {accident_description}
 
-Rules:
-- Identify EVERY visible damaged part (bumpers, headlights, bonnet, doors, etc.)
-- Be specific: "left headlight cracked" not just "headlight damaged"
-- Confidence should reflect how clearly you can see the damage
-- If the image is unclear, still provide best estimates with lower confidence
-- Do NOT wrap the JSON in markdown code fences in your final answer
+DAMAGE INSPECTION RULES:
+- Identify EVERY visible damaged part (bumpers, headlights, bonnet, doors, fenders, wheels, windscreen, etc.)
+- Be specific: "left front headlight — lens shattered" not just "headlight damaged"
+- Confidence reflects how clearly the damage is visible
+- If image is unclear, still provide best estimates with lower confidence values
+
+MODIFICATION DETECTION RULES (critical for claim validity):
+Inspect the vehicle carefully for ANY of these unauthorised modifications that standard policies do not cover:
+1. Performance/engine mods — aftermarket air intakes, chip tuning stickers, turbo/supercharger additions, exhaust modifications
+2. Suspension mods — lowering kits, lift kits, non-standard shock absorbers, air suspension
+3. Body modifications — aftermarket body kits, non-OEM bumpers, spoilers, wide-body kits, vinyl wraps
+4. Wheel/tyre mods — oversized wheels, racing slick tyres, non-standard offsets
+5. Interior mods — roll cages, racing seats without harness approval, removed airbags
+6. Lighting mods — illegal tint, HID/LED retrofits without approval, underlighting
+7. Towing/hauling mods — non-approved tow bars, roof racks affecting structural integrity
+8. Safety system tampering — removed or bypassed airbags, ABS disabling
+
+If NO modifications are visible, return an empty array: "modifications_detected": []
+Only include modifications that are CLEARLY VISIBLE in the image.
 """
 
 
 class VisionAgent(BaseAgent):
-    """Detects damaged parts from accident images using Gemini Vision."""
+    """Detects damaged parts and unauthorised modifications using Gemini Vision."""
 
     def run(self, state: GraphState) -> GraphState:
         self.logger.info("VisionAgent starting for claim %s", state.claim_id)
         try:
-            # Decode base64 image
             image_bytes = base64.b64decode(state.image_base64)
 
-            # Build Gemini image part
+            # Use actual mime type from upload, not hardcoded jpeg
+            mime_type = state.image_mime_type or "image/jpeg"
+
             image_part = {
-                "mime_type": "image/jpeg",
+                "mime_type": mime_type,
                 "data": image_bytes,
             }
 
@@ -82,16 +106,24 @@ class VisionAgent(BaseAgent):
             data = self._extract_json(raw_response)
             output = self._parse_output(data)
             state.vision_output = output
+
+            mod_count = len(output.modifications_detected)
             self.logger.info(
-                "VisionAgent complete — %d parts detected, severity=%s",
+                "VisionAgent complete — %d parts detected, severity=%s, modifications=%d",
                 len(output.damaged_parts),
                 output.overall_severity,
+                mod_count,
             )
+            if mod_count > 0:
+                self.logger.warning(
+                    "MODIFICATIONS DETECTED for claim %s: %s",
+                    state.claim_id,
+                    [m.modification_type for m in output.modifications_detected],
+                )
 
         except Exception as exc:
             self.logger.error("VisionAgent failed: %s", exc, exc_info=True)
             state.errors.append(f"VisionAgent error: {str(exc)}")
-            # Provide a fallback output so the pipeline can continue
             state.vision_output = self._fallback_output(state.accident_description)
 
         return state
@@ -110,12 +142,24 @@ class VisionAgent(BaseAgent):
             )
             for p in data.get("damaged_parts", [])
         ]
+
+        modifications = [
+            VehicleModification(
+                modification_type=m["modification_type"],
+                description=m["description"],
+                claim_impact=m["claim_impact"],
+                rejection_reason=m["rejection_reason"],
+            )
+            for m in data.get("modifications_detected", [])
+        ]
+
         return VisionAgentOutput(
             damaged_parts=parts,
             overall_severity=SeverityLevel(data.get("overall_severity", "MODERATE")),
             accident_type=data.get("accident_type", "unknown"),
             image_quality=data.get("image_quality", "Clear"),
             raw_observations=data.get("raw_observations", ""),
+            modifications_detected=modifications,
         )
 
     def _fallback_output(self, description: str) -> VisionAgentOutput:
@@ -133,4 +177,5 @@ class VisionAgent(BaseAgent):
             accident_type="unknown",
             image_quality="Blurry",
             raw_observations="Image analysis failed — using description only.",
+            modifications_detected=[],
         )

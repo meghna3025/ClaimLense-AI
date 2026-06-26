@@ -49,6 +49,12 @@ interface BackendResponse {
     accident_type: string;
     image_quality: string;
     raw_observations: string;
+    modifications_detected: {
+      modification_type: string;
+      description: string;
+      claim_impact: string;
+      rejection_reason: string;
+    }[];
   };
   damage_assessment?: {
     assessments: BackendPartAssessment[];
@@ -192,6 +198,7 @@ function toReportData(
     vehicleMake: claimData.vehicleMake,
     vehicleModel: claimData.vehicleModel,
     policyNumber: claimData.policyNumber,
+    modificationsDetected: raw.vision?.modifications_detected ?? [],
   };
 }
 

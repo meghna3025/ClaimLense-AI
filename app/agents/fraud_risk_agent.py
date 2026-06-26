@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 FRAUD_PROMPT = """
 You are a senior insurance fraud investigator with 15+ years of experience.
-Analyse this claim for potential fraud indicators.
+Analyse this claim for potential fraud indicators AND unauthorised vehicle modifications.
 
 CLAIM DETAILS:
 Policy Number: {policy_number}
@@ -31,6 +31,9 @@ Accident Description: {accident_description}
 
 VISION FINDINGS:
 {vision_summary}
+
+VEHICLE MODIFICATIONS DETECTED:
+{modifications_summary}
 
 DAMAGE ASSESSMENT:
 {damage_summary}
@@ -54,6 +57,12 @@ Analyse for these fraud patterns:
 5. Accident description vagueness or implausibility
 6. Parts claimed that don't match accident type
 7. Estimate significantly exceeds market rates
+8. UNAUTHORISED MODIFICATIONS — any modifications detected automatically increase fraud score
+   and may result in claim rejection per standard policy exclusions
+
+CRITICAL: If any vehicle modifications were detected, they MUST be reflected as HIGH-weight
+fraud indicators since they represent policy exclusions. Modifications to performance, safety
+systems, or structural components void standard coverage.
 
 Return ONLY a valid JSON object:
 {{
@@ -74,7 +83,8 @@ Return ONLY a valid JSON object:
 Scoring guide:
 - 0.0 - 0.35: LOW — claim appears legitimate
 - 0.35 - 0.65: MEDIUM — some concerns, needs review
-- 0.65 - 1.0: HIGH — strong fraud indicators present
+- 0.65 - 1.0: HIGH — strong fraud indicators or modifications present
+- Any detected modifications should push score to at least 0.65 (HIGH)
 """
 
 
@@ -107,6 +117,7 @@ class FraudRiskAgent(BaseAgent):
                 vehicle_model=state.vehicle_model,
                 accident_description=state.accident_description,
                 vision_summary=self._vision_summary(state),
+                modifications_summary=self._modifications_summary(state),
                 damage_summary=self._damage_summary(state),
                 repair_total=self._repair_total(state),
                 policy_type=state.policy_output.policy_type if state.policy_output else "Unknown",
@@ -144,6 +155,19 @@ class FraudRiskAgent(BaseAgent):
             f"Overall severity: {state.vision_output.overall_severity}\n"
             f"Damaged parts: {', '.join(parts)}"
         )
+
+    def _modifications_summary(self, state: GraphState) -> str:
+        if not state.vision_output or not state.vision_output.modifications_detected:
+            return "NONE DETECTED — vehicle appears unmodified"
+        mods = state.vision_output.modifications_detected
+        lines = [f"⚠️  {len(mods)} modification(s) detected — these may VOID coverage:"]
+        for m in mods:
+            lines.append(
+                f"  • {m.modification_type}: {m.description}\n"
+                f"    Impact: {m.claim_impact}\n"
+                f"    Rejection basis: {m.rejection_reason}"
+            )
+        return "\n".join(lines)
 
     def _damage_summary(self, state: GraphState) -> str:
         if not state.damage_assessment_output:

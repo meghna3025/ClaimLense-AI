@@ -18,10 +18,10 @@ interface NewClaimFormProps {
 
 export function NewClaimForm({ onNavigate }: NewClaimFormProps) {
   const [form, setForm] = useState({
-    vehicleMake: '',
-    vehicleModel: '',
-    policyNumber: '',
-    accidentDescription: '',
+    vehicleMake: 'Toyota',
+    vehicleModel: 'Corolla 2022',
+    policyNumber: 'POL-TY-88231',
+    accidentDescription: 'On June 25, 2026 at approximately 2:30 PM, my vehicle was involved in a front-end collision at the intersection of MG Road and Brigade Road, Bangalore. A truck ran a red light and struck my vehicle on the front-left side. The airbags deployed. Police report filed (FIR #BLR-2026-4421). Significant damage to front bumper, bonnet, left headlight, and radiator.',
   });
   const [images, setImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);

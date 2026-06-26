@@ -9,6 +9,7 @@ import {
   FileText,
   BarChart2,
   Home,
+  AlertOctagon,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import type { ViewType, ReportData } from '../types';
@@ -274,6 +275,64 @@ export function FinalReport({ report, onNavigate }: FinalReportProps) {
               </div>
             </div>
           </motion.div>
+
+          {/* Vehicle Modifications Warning */}
+          {report.modificationsDetected && report.modificationsDetected.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="rounded-2xl p-6"
+              style={{
+                background: 'linear-gradient(135deg, #7F1D1D, #991B1B)',
+                boxShadow: '0 4px 20px rgba(220,38,38,0.25)',
+              }}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.15)' }}>
+                  <AlertOctagon style={{ width: 18, height: 18, color: '#fff' }} />
+                </div>
+                <div>
+                  <h3 className="text-white text-sm" style={{ fontWeight: 700 }}>
+                    ⚠️ Unauthorised Modifications Detected
+                  </h3>
+                  <p className="text-xs" style={{ color: 'rgba(255,255,255,0.65)' }}>
+                    {report.modificationsDetected.length} modification(s) detected — may void coverage
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                {report.modificationsDetected.map((mod, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 + i * 0.07 }}
+                    className="p-4 rounded-xl"
+                    style={{ background: 'rgba(0,0,0,0.25)' }}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <span
+                        className="text-xs px-2 py-0.5 rounded-full font-semibold uppercase tracking-wide"
+                        style={{ background: '#FEE2E2', color: '#DC2626' }}
+                      >
+                        {mod.modification_type}
+                      </span>
+                    </div>
+                    <p className="text-sm mb-1" style={{ color: 'rgba(255,255,255,0.9)' }}>
+                      {mod.description}
+                    </p>
+                    <p className="text-xs mb-1" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                      <span className="font-semibold">Claim impact:</span> {mod.claim_impact}
+                    </p>
+                    <p className="text-xs" style={{ color: '#FCA5A5' }}>
+                      <span className="font-semibold">Rejection basis:</span> {mod.rejection_reason}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
 
           {/* Policy Coverage */}
           <motion.div

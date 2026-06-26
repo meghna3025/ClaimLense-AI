@@ -48,12 +48,22 @@ class DamagedPart(BaseModel):
     confidence: float = Field(..., ge=0.0, le=1.0, description="Detection confidence 0-1")
 
 
+class VehicleModification(BaseModel):
+    modification_type: str = Field(..., description="Type of modification e.g. engine tuning, body kit")
+    description: str = Field(..., description="What was visually observed")
+    claim_impact: str = Field(..., description="How this affects the claim coverage")
+    rejection_reason: str = Field(..., description="Policy clause or reason for rejection")
+
+
 class VisionAgentOutput(BaseModel):
     damaged_parts: list[DamagedPart]
     overall_severity: SeverityLevel
     accident_type: str = Field(..., description="E.g. front collision, rear-end, side impact")
     image_quality: str = Field(..., description="Clear / Blurry / Partial")
     raw_observations: str = Field(..., description="Free-text observations from Gemini Vision")
+    modifications_detected: list[VehicleModification] = Field(
+        default_factory=list, description="Unauthorised vehicle modifications that may void coverage"
+    )
 
 
 # ─────────────────────────────────────────
@@ -197,6 +207,7 @@ class GraphState(BaseModel):
     vehicle_model: str = ""
     accident_description: str = ""
     image_base64: str = ""
+    image_mime_type: str = "image/jpeg"  # actual mime type forwarded from upload
 
     # Agent outputs
     vision_output: VisionAgentOutput | None = None

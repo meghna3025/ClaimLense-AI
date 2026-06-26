@@ -63,6 +63,7 @@ async def process_claim(
         vehicle_model=vehicle_model.strip(),
         accident_description=description.strip(),
         image_base64=image_b64,
+        image_mime_type=image.content_type or "image/jpeg",
     )
 
     try:

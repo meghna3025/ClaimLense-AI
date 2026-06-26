@@ -18,6 +18,13 @@ export interface DamagedPart {
   cost: number;
 }
 
+export interface VehicleModification {
+  modification_type: string;
+  description: string;
+  claim_impact: string;
+  rejection_reason: string;
+}
+
 export interface ReportData {
   claimNumber: string;
   decision: DecisionType;
@@ -32,6 +39,7 @@ export interface ReportData {
   vehicleMake: string;
   vehicleModel: string;
   policyNumber: string;
+  modificationsDetected: VehicleModification[];
 }
 
 export interface ClaimRecord {
